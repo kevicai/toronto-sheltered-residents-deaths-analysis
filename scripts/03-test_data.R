@@ -1,15 +1,31 @@
 #### Preamble ####
-# Purpose: Tests... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Tests cleaned Toronto deaths of shelter residents data
+# Author: Kevin Cai
+# Date: 27 September 2024
+# Contact: kev.cai@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: 01-download_data.R, 02-data_cleaning.R
+# Any other information needed? None
 
 
 #### Workspace setup ####
 library(tidyverse)
-# [...UPDATE THIS...]
 
 #### Test data ####
+cleaned <- read.csv("data/analysis_data/cleaned_data.csv")
+
+# test for NAs
+print("No NAs:")
+is.na(data$deaths) |> min() <= 0
+
+# test for for negative numbers
+print("No negative numbers:")
+data$deaths |> min() <= 0
+
+# test for correct columns 
+print("Correct columns:")
+data |> colnames() == c("year", "season", "deaths")
+
+# test for correct number of total seasons
+print("Correct number of rows (seasons):")
+nrow(cleaned) == 4 * (2024 - 2007)

@@ -1,19 +1,30 @@
 #### Preamble ####
-# Purpose: Simulates... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Simulates the cleaned data
+# Author: Kevin Cai
+# Date: 27 September 2024
+# Contact: kev.cai@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: None
+# Any other information needed? None
 
 
 #### Workspace setup ####
 library(tidyverse)
-# [...UPDATE THIS...]
 
 #### Simulate data ####
-# [...ADD CODE HERE...]
+set.seed(3090)
 
+years <- 2007:2023
+seasons <- c("Winter", "Spring", "Summer", "Fall")
 
+# create a table
+data <- expand.grid(year = years, season = seasons)
 
+# simulate deaths for each year-season combination
+data <-
+  data |>
+  mutate(deaths = rpois(nrow(data), lambda = 5)) |>
+  arrange(year)
+
+#### Write_csv
+write_csv(data, file = "data/analysis_data/simulated.csv")
