@@ -22,10 +22,25 @@ is.na(data$deaths) |> min() <= 0
 print("No negative numbers:")
 data$deaths |> min() <= 0
 
-# test for correct columns 
+# test for correct columns
 print("Correct columns:")
 data |> colnames() == c("year", "season", "deaths")
 
+# test each season has same occurence
+print("Each season has the same occurrence:")
+season_counts <- cleaned %>%
+    group_by(season) %>%
+    summarise(count = n(), .groups = "drop")
+n_distinct(season_counts$count) == 1
+
+## test cleaned data
 # test for correct number of total seasons
 print("Correct number of rows (seasons):")
 nrow(cleaned) == 4 * (2024 - 2007)
+
+# test correct number of each season
+print("17 occurence of each season:")
+season_counts <- cleaned %>%
+    group_by(season) %>%
+    summarise(count = n(), .groups = "drop")
+season_counts$count == 17

@@ -11,7 +11,7 @@
 library(tidyverse)
 
 get_season <- function(month) {
-  if (month == "Dec" || month == "Jan" || month == "Feb") {
+  if (month == "Jan" || month == "Feb") {
     return("Winter")
   } else if (month == "Mar" || month == "Apr" || month == "May") {
     return("Spring")
@@ -28,20 +28,28 @@ raw_data <- read_csv("data/raw_data/raw_data.csv")
 filtered_data <-
   raw_data |>
   janitor::clean_names() |>
-  filter(year != 2024)
+  filter(
+    !(
+      (year == 2007 & month %in% c("Jan", "Feb")) |
+        (year == 2024 & month %in% c("Mar", "Apr", "May", "Jun", "Jul", "Aug"))
+    )
+  )
 
 mutated_data <-
   filtered_data |>
-  mutate(season = sapply(month, get_season)) |>
+  mutate(
+    season = ifelse(month == "Dec", "Winter", sapply(month, get_season)),
+    # Treat Dec as Winter
+    year = ifelse(month == "Dec", year + 1, year)
+  ) |>
   group_by(year, season) |>
   summarise(deaths = sum(total_decedents))
-mutated_data
 
 summarized_data <-
   mutated_data |>
   group_by(season) |>
-  summarize(mean_value = round(mean(deaths), 3))
-summarized_data
+  summarize(sum = sum(deaths), mean = round(mean(deaths), 3))
+summarized_data 
 
 #### Save data ####
 write_csv(mutated_data, "data/analysis_data/cleaned_data.csv")
