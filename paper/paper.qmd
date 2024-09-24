@@ -17,17 +17,35 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
+library(knitr)
+
+# read data
+cleaned_data <- read_csv("../data/analysis_data/cleaned_data.csv")
 ```
 
 # Introduction
 
-Homelessness is a persistent issue in Canada, with Toronto fostering to the largest population of homeless individuals in the country @homelessStats. On any given night, an estimated 10,000 people in Toronto are without a permanent home, with many relying on Toronto shelters for safety and warmth @homelessStats. Despite the city of Toronto providing shelters for these homeless people, sheltered residents still face many health risks. 
+Homelessness is a persistent issue in Canada, with Toronto fostering to the largest population of homeless individuals in the country [@homelessStats]. On any given night, an estimated 10,000 people in Toronto are without a permanent home [@homelessStats], with many relying on Toronto shelters for safety and warmth. Despite the city of Toronto providing shelters for these homeless people, sheltered residents still face many health risks. 
 
-Previous research has shown that homeless populations are at an increased risk of mortality by cold temperatures, particularly during the winter months @winterAffets. This paper aims to explore seasonal variations in mortality rates among shelter residents in Toronto between 2007 and 2023. By comparing mortality rates across winter, spring, summer, and fall, I seek to determine whether winter poses a disproportionately high risk for sheltered individuals. 
+Previous research has shown that homeless populations are at an increased risk of mortality by cold temperatures, particularly during the winter months [@winterAffets]. This paper aims to explore seasonal variations in mortality rates among shelter residents in Toronto between 2007 and 2024. By comparing mortality rates across winter, spring, summer, and fall, I seek to determine whether winter poses a disproportionately high risk for sheltered individuals. 
 
 The remainder of this paper is structured as follows: @sec-data addresses the data used in the analysis, @sec-results presents the results, @sec-discussion disscusses my findings and limitations in the results.
 
 # Data {#sec-data}
+
+The data was extracted, cleaned, and analysed using the statistic programming software R [@citeR] and the R libaries `tidyverse` @citeTidyverse and `janitor` [@citeJanitor]. 
+
+# Overview of Dataset
+The dataset "Deaths of Shelter Residents" [@datasetSource] obtained from the OpenDataToronto R package [@citeOpenDataToronto], to invesigate the affect of winter on sheltered residents in Toronto. This dataset includes the number of deaths of sheltered residents for every month from January 2007 to August 2024. A sample of the cleaned dataset is shown in @tbl-cleaned. 
+
+```{r cleaned-sample, message = FALSE, echo = FALSE}
+#| label: tbl-cleaned
+#| tbl-cap: "Sample of Cleaned Deaths of Shelter Residents Data"
+head(cleaned_data) |>
+  kable(col.names = c("Year", "Season", "Deaths"))
+```
+
+The variables year and season denotes the year and season of death. The data originally contained the number of deaths for each month, but for the purpose of studying the affect of seasons, I merged the months into quarterly seasons. Specifically, winter includes December, January and Feburary; spring includes March, April and May; Summer includes June, July, and August; Fall includes September, October, and November. The dataset does not contain the exact date of death, so the four seasons are divided three months each rather than the exact days for each season in Toronto. The variable death is the total number of decedents amongst male, female, and transgender/non-binary/two-Spirit sheltered residents. The original dataset includes months January to August of 2024, however these months are filtered from the final dataset as not all seasons are present in 2024. 
 
 # Results {#sec-results}
 
