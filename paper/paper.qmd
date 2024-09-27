@@ -5,7 +5,7 @@ author:
 thanks: "Code and data are available at: https://github.com/kevicai/toronto-sheltered-residents-deaths-analysis"
 date: today
 date-format: long
-abstract: "This study explores Toronto winters' influence on the morality rates among sheltered residents, utilizing data from 2007-2024. I explore how cold weather impacts those in shelters by drawing upon previous research highlighting increased risks for homeless populations during colder months. I find that mortality rates in spring, summer, and fall are similar, while winter shows slight increases compared to the other seasons. This finding suggests while homeless shelters do help to lower the risk of death in winter, further measures should be taken to protect sheltered individuals against cold weather."
+abstract: "This study explores Toronto winters' influence on the morality rates among sheltered residents. Using data on the number of sheltered deaths in each season from 2007 to 2024, I investigate how cold weather impacts those in shelters. I find that mortality rates in spring, summer, and fall are similar, while winter shows a slight increase compared to the other seasons. This finding suggests that while Toronto shelters offer protection from extreme weather, shelter residents remain vulnerable to cold temperatures, indicating that further measures should be taken to ensure their safety."
 format: pdf
 number-sections: true
 bibliography: references.bib
