@@ -5,7 +5,7 @@ author:
 thanks: "Code and data are available at: https://github.com/kevicai/toronto-sheltered-residents-deaths-analysis"
 date: today
 date-format: long
-abstract: "This study explores Toronto winters' influence on the morality rates among sheltered residents, utilizing data from 2007-2023. I explore how cold weather impacts those in shelters by drawing upon previous research highlighting increased risks for homeless populations during colder months. I find that mortality rates in spring, summer, and fall are similar, while winter shows slight increases compared to the other seasons. This finding suggests while homeless shelters do help to lower the risk of death in winter, further measures should be taken to protect sheltered individuals against cold weather."
+abstract: "This study explores Toronto winters' influence on the morality rates among sheltered residents, utilizing data from 2007-2024. I explore how cold weather impacts those in shelters by drawing upon previous research highlighting increased risks for homeless populations during colder months. I find that mortality rates in spring, summer, and fall are similar, while winter shows slight increases compared to the other seasons. This finding suggests while homeless shelters do help to lower the risk of death in winter, further measures should be taken to protect sheltered individuals against cold weather."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -21,6 +21,7 @@ library(knitr)
 
 # read data
 cleaned_data <- read_csv("../data/analysis_data/cleaned_data.csv")
+grouped_data <- read_csv("../data/analysis_data/grouped_data.csv")
 summarized_data <- read_csv("../data/analysis_data/summarized_data.csv")
 ```
 
@@ -28,59 +29,118 @@ summarized_data <- read_csv("../data/analysis_data/summarized_data.csv")
 
 Homelessness is a persistent issue in Canada, with Toronto fostering the largest population of homeless individuals in the country [@homelessStats]. On any given night, an estimated 10,000 people in Toronto are without a permanent home [@homelessStats], with many relying on Toronto shelters for safety and warmth. Despite the city of Toronto providing shelters for these homeless people, sheltered residents still face many health risks. 
 
-Previous research has shown that homeless populations are at an increased risk of mortality from cold temperatures, particularly during the winter months [@winterAffets]. This paper aims to explore seasonal variations in mortality rates among shelter residents in Toronto between 2007 and 2024. By comparing mortality rates across winter, spring, summer, and fall, I seek to determine whether winter poses a disproportionately high risk for sheltered individuals.  
+⁤Previous research has shown that homeless populations are at an increased risk of mortality from cold temperatures, particularly during the winter months [@winterAffets]. ⁤⁤However, much of this existing research focuses on unsheltered individuals who are fully exposed to the cold. ⁤⁤This leaves an important gap in our understanding of the well-being of sheltered homeless in winter.
 
-The remainder of this paper is structured as follows: @sec-data addresses the data used in the analysis, @sec-discussion discusses  my findings and limitations in the results.
+To explore this, I utilized a dataset from Toronto Shelter & Support Services, which documents the number of deaths for sheltered or recently shelter residents between March 2007 and February 2024. By comparing the death rate of each season and various trends in the data, I find that winter not only has the highest total death count but also consistently leads as the deadliest season across multiple years. This finding suggests that, although shelters provide essential services and are designed to protect homeless individuals from extreme weathers, they may not fully reduce the heightened risks associated with cold weather.
+
+The remainder of this paper is structured as follows: @sec-data addresses the data used in the analysis, and @sec-discussion discusses my findings and limitations in the results.
 
 # Data {#sec-data}
 
-The data was extracted, cleaned, and analysed using the statistic programming software R [@citeR] and the R libaries `tidyverse` @citeTidyverse, `janitor` [@citeJanitor], `citeKnitr` [@citeKnitr], `ggplot2` [@citeGgplot2]. 
+The data was extracted, cleaned, and analysed using the statistic programming software R [@citeR] and the R libaries `tidyverse` @citeTidyverse, `janitor` [@citeJanitor], `citeKnitr` [@citeKnitr], `ggplot2` [@citeGgplot2]. The data presentation and analysis methods used are from Telling Stories with Data (@alexander_2023).
 
 ## Overview of Dataset
-To investigate the effect of winter on sheltered residents in Toronto, the dataset "Deaths of Shelter Residents" [@datasetSource] collected by the City of Toronto’s Shelter and Support Services Division was used. This dataset has been systematically documenting the deaths of residents in its shelters since 2007. The number of deaths is recorded for each month, and each death is reported within 24 hours of identifying the deceased [@measurements]. These reports apply to both current and recent shelter residents and no sensitive privacy data that can identify the residents was recorded. The dataset measures deaths of male, female, and transgender/non-binary/two-Spirit sheltered residents. Similar datasets are available by OpenDataToronto, including the number of deaths of people experiencing homelessness in general. However, the chosen dataset is the most relevant to the study of the deaths of homeless people who have used Toronto shelters. 
+
+To investigate the effect of winter on sheltered residents in Toronto, I investigate the dataset @datasetSource, collected by the City of Toronto’s Shelter and Support Services Division. This dataset is a part of Toronto's initiative to identify and respond quickly to issues that emerge in homeless shelters [@measurements]. This dataset has been systematically documenting the deaths of residents in its shelters since 2007. The number of deaths is recorded for each month, and each death is reported within 24 hours of identifying the deceased [@measurements]. These reports apply to both current and recent shelter residents and no sensitive privacy data that can identify the residents was recorded. The dataset measures deaths of male, female, and transgender/non-binary/two-Spirit sheltered residents. 
 
 I obtained the data using the OpenDataToronto R package [@citeOpenDataToronto] from OpenDataToronto. A sample of the cleaned dataset is shown in @tbl-cleaned. 
 
 ```{r, message = FALSE, echo = FALSE}
 #| label: tbl-cleaned
 #| tbl-cap: "Sample of Cleaned Deaths of Shelter Residents Data"
-head(cleaned_data) |>
+head(grouped_data, 5) |>
   kable(col.names = c("Year", "Season", "Deaths"))
 ```
 
-The variables year and season denote the year and season of death. The data originally contained the number of deaths for each month, but for the purpose of studying the effect of seasons, the months are merged into seasons. Winter of each year includes December of its previous year, January and February; Spring includes March, April and May; Summer includes June, July, and August; Fall includes September, October, and November. The dataset does not contain the exact date of death, so the four seasons are divided into three months rather than the exact days for each season in Toronto. The original dataset includes months from January 2007 to August 2024, but in the final dataset, only months from March 2007 to February 2024 are included to ensure that there are 17 occurrences of each season. Further, no invalid data was found in the original dataset and the cleaned dataset includes 68 rows. 
+The variable `deaths` includes the total count of deaths from all gender identities: male, female, transgender/non-binary/two-Spirit. Although the dataset tracks gender distinctions, for the purposes of this analysis, these were combined to focus on overall mortality trends rather than gender-specific mortality patterns. The variables `year` and `season` denote the year and season of death. The data originally contained the number of deaths for each month, but for the purpose of studying the effect of seasons, the months are merged into seasons. Winter of each year includes only December of the year and additionally January and February of the following year; Spring includes March, April and May; Summer includes June, July, and August; Fall includes September, October, and November. The dataset does not contain the exact date of death, so the four seasons are divided into three months rather than the exact days for each season in Toronto. The original dataset includes months from January 2007 to August 2024, but in the final dataset, only months from March 2007 to February 2024 are included to ensure that there are 17 occurrences of each season. Further, no invalid data was found in the original dataset and the cleaned dataset includes 68 rows. 
+
+Similiar datasets, such as general homelessness mortality of Toronto, could be used in the research. However, these datasets are less specific to the sheltered population and include individuals with different levels of exposure to shelters. For understanding the direct impact of shelters, the chosen dataset is ideal, allowing for a more precise analysis.
 
 ## Data Summary
 
 ```{r, message = FALSE, echo = FALSE}
+#| label: tbl-summarized
+#| tbl-cap: "Summary of deaths of shelter residents in Toronto data"
+head(summarized_data) |> 
+  kable(col.names = c("Season", "Total Deaths", "Average Deaths"))
+```
+
+@tbl-summarized presents a summary of the total and average deaths by season. It shows that while mortality rates for fall, spring, and summer are relatively similar, winter experiences a noticeable increase in the number of deaths, indicating potentially higher mortality risks during this season.
+
+```{r, message = FALSE, echo = FALSE}
 #| label: fig-trend-winter
-#| fig-cap: "Toronto all seasons sheltered deaths changes, from spring 2007 to winter 2024 "
-cleaned_data |>
+#| fig-cap: "Toronto all seasons sheltered deaths changes, 2007-2024"
+grouped_data |>
   ggplot(mapping = aes(x = year, y = deaths, color = season)) + 
   geom_line() + 
   theme_minimal() + 
   scale_x_continuous(breaks = seq(min(cleaned_data$year), max(cleaned_data$year), by = 2)) +  
   labs(x = "Year", y = "Number of Deaths", 
        caption = "Data source: OpenDataToronto", 
-       color = "Season")
+       color = "Season") +
+  theme(
+    axis.title.x = element_text(size = 10),  
+    axis.title.y = element_text(size = 10),
+  )
 ```
 
-@fig-trend-winter presents the changes of sheltered morality in the seasons of different years. It is important to notice that Winter is nolonger the leading season of death after 2019.
+@fig-trend-winter presents the changes of sheltered mortality rates in the seasons of different years. 
 
 ```{r, message = FALSE, echo = FALSE}
-#| label: tbl-summarized
-#| tbl-cap: "Summary of deaths of shelter residents in toronto data"
-head(summarized_data) |> 
-  kable(col.names = c("Season", "Total Deaths", "Average Deaths"))
-```
+#| label: fig-most-deaths-bar
+#| fig-cap: "Toronto all seasons sheltered deaths changes, 2007-2024"
+# Find the season with maximum deaths for each year
+max_death_seasons <- grouped_data |>
+  group_by(year) |>
+  filter(deaths == max(deaths)) |>
+  ungroup() |>
+  count(season)
 
-@tbl-summarized presents a summary of the total and average deaths by season. It shows that while mortality rates for Fall, Spring, and Summer are relatively similar, Winter experiences a noticeable increase in the number of deaths, indicating potentially higher mortality risks during this season.
+# Plot the histogram
+ggplot(max_death_seasons, mapping = aes(x = season, y = n)) +
+  geom_col() +
+  theme_minimal() +
+  labs(
+    x = "Season",
+    y = "Years with season leading in death count",
+    caption = "Data source: OpenDataToronto"
+  ) + 
+  scale_y_continuous(breaks = seq(0, max(max_death_seasons$n), by = 1)) + 
+  theme(
+    axis.title.x = element_text(size = 10),  
+    axis.title.y = element_text(size = 10),
+    panel.grid.minor.y = element_blank() 
+  )
+```
+@fig-most-deaths-bar shows the number of times each season has the highest number of sheltered deaths in the respective year, winter clearly in the lead. 
+
+```{r, message = FALSE, echo = FALSE}
+#| label: fig-boxplot
+#| fig-cap: "Boxplot of Deaths by Season"
+ggplot(grouped_data, aes(x = season, y = deaths)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    x = "Season",
+    y = "Number of Deaths"
+  ) +
+  theme(
+    axis.title.x = element_text(size = 10), 
+    axis.title.y = element_text(size = 10),  
+  )
+```
+@fig-boxplot shows the boxplots of the number of deaths in each season. 
 
 # Discussion {#sec-discussion}
 
+⁤A clear trend can be found in the mortality rates among sheltered residents. ⁤⁤As seen in @fig-boxplot, winter takes the lead in the number of deaths with the highest minimum, maximum, median, and quantile values. ⁤⁤In addition, the data summarized in @tbl-summarized shows that winter accounted for 228 deaths between 2007 and 2024, with an average of 13.41 deaths per winter season. ⁤⁤This contrasts with spring, summer, and fall, which all average approximately 11 deaths per season. ⁤⁤This data suggests that compared to other seasons, winter has a 21.91% increase in mortality rate. ⁤⁤We can apply these statistics as a projection to future winters and estimate the amount of extra resources the shelters need to accommodate for the increased risk. ⁤
+
+⁤The histogram in @fig-most-deaths-bar also shows winter had the highest number of deaths, three times more than the second highest seasons with only. ⁤⁤Also, winter leads in 9 out of the 17 years recorded, accounting for more than half of the years. ⁤⁤This reinforces the idea that winter is the deadliest season. ⁤
+
+⁤Although winter leads to the death rate in most years, it is worth noting that winter is not always the deadliest season. ⁤⁤In 2021 winter has the lowest death rate while fall leads with more than 10 deaths than winter, as illustrated in @fig-trend-winter. ⁤⁤This anomaly could be due to factors beyond seasonal weather, such as Covid-19. ⁤⁤It is important to further analyze the cause of this increase in further research.  
+
+## Limitations {#sec-conclusion}
+There are two noticeable limitations to this study. First, the dataset only provides the season and year of death. This limits the ability to correlate deaths with the exact season, or extreme cold temperatures recorded. More precise insights and comparisons to daily temperature datasets could be made if the dataset includes weekly or daily data. Furthermore, the dataset does not report the shelter the deceased resided in. If we can consider the varying quality, capacity, or conditions of the shelters, a more detailed judgement on the effects of weather could be made since not all shelters provide the same level of protection from the cold. 
+
 \newpage
 # References
-
-## TODO: add sketches, llm usages
-
-

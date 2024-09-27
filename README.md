@@ -16,4 +16,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-ChatGPT was used to help with idea generation and bug fixing for the paper and R code. The entire chat history is available in inputs/llms/usage.txt.
+ChatGPT was used to help with bug fixing and idea generation for the paper and R code. The entire chat history is available in other/llms/usage.txt.
